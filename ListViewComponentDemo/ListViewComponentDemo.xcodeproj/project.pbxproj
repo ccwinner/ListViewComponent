@@ -101,6 +101,7 @@
 		5D915F7E1EA8B740009D7069 /* ListViewComponentDemo */ = {
 			isa = PBXGroup;
 			children = (
+				82EFDD881EA8B7DD003BB610 /* ListViewComponent */,
 				5D915F821EA8B740009D7069 /* AppDelegate.h */,
 				5D915F831EA8B740009D7069 /* AppDelegate.m */,
 				5D915F851EA8B740009D7069 /* ViewController.h */,
@@ -138,6 +139,13 @@
 				5D915FA61EA8B740009D7069 /* Info.plist */,
 			);
 			path = ListViewComponentDemoUITests;
+			sourceTree = "<group>";
+		};
+		82EFDD881EA8B7DD003BB610 /* ListViewComponent */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ListViewComponent;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -518,6 +526,7 @@
 				5D915FAB1EA8B740009D7069 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		5D915FAC1EA8B740009D7069 /* Build configuration list for PBXNativeTarget "ListViewComponentDemoTests" */ = {
 			isa = XCConfigurationList;
@@ -526,6 +535,7 @@
 				5D915FAE1EA8B740009D7069 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		5D915FAF1EA8B740009D7069 /* Build configuration list for PBXNativeTarget "ListViewComponentDemoUITests" */ = {
 			isa = XCConfigurationList;
@@ -534,6 +544,7 @@
 				5D915FB11EA8B740009D7069 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
