@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5D35302B1EA8F0B1005DB20F /* LJMListAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D35302A1EA8F0B1005DB20F /* LJMListAdapter.m */; };
+		5D35302F1EA90338005DB20F /* LJMListSectionConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D35302E1EA90338005DB20F /* LJMListSectionConfiguration.m */; };
 		5D915F811EA8B740009D7069 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D915F801EA8B740009D7069 /* main.m */; };
 		5D915F841EA8B740009D7069 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D915F831EA8B740009D7069 /* AppDelegate.m */; };
 		5D915F871EA8B740009D7069 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D915F861EA8B740009D7069 /* ViewController.m */; };
@@ -35,6 +37,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5D3530291EA8F0B1005DB20F /* LJMListAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LJMListAdapter.h; sourceTree = "<group>"; };
+		5D35302A1EA8F0B1005DB20F /* LJMListAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LJMListAdapter.m; sourceTree = "<group>"; };
+		5D35302C1EA8F6F2005DB20F /* LJMListSectionProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LJMListSectionProtocol.h; sourceTree = "<group>"; };
+		5D35302D1EA90338005DB20F /* LJMListSectionConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LJMListSectionConfiguration.h; sourceTree = "<group>"; };
+		5D35302E1EA90338005DB20F /* LJMListSectionConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LJMListSectionConfiguration.m; sourceTree = "<group>"; };
 		5D915F7C1EA8B740009D7069 /* ListViewComponentDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ListViewComponentDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D915F801EA8B740009D7069 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		5D915F821EA8B740009D7069 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -51,6 +58,8 @@
 		5D915FA01EA8B740009D7069 /* ListViewComponentDemoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ListViewComponentDemoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D915FA41EA8B740009D7069 /* ListViewComponentDemoUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ListViewComponentDemoUITests.m; sourceTree = "<group>"; };
 		5D915FA61EA8B740009D7069 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5DAE5AC01EA99DD0005AB2C0 /* LJMListCellConvention.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LJMListCellConvention.h; sourceTree = "<group>"; };
+		5DAE5AC11EA99E05005AB2C0 /* LJMListResponseDataProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LJMListResponseDataProcessor.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +87,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5D3530281EA8F08B005DB20F /* ListView */ = {
+			isa = PBXGroup;
+			children = (
+				5DAE5ABF1EA99D9E005AB2C0 /* Cell */,
+				5D3530291EA8F0B1005DB20F /* LJMListAdapter.h */,
+				5D35302A1EA8F0B1005DB20F /* LJMListAdapter.m */,
+				5D35302C1EA8F6F2005DB20F /* LJMListSectionProtocol.h */,
+				5D35302D1EA90338005DB20F /* LJMListSectionConfiguration.h */,
+				5D35302E1EA90338005DB20F /* LJMListSectionConfiguration.m */,
+				5DAE5AC11EA99E05005AB2C0 /* LJMListResponseDataProcessor.h */,
+			);
+			path = ListView;
+			sourceTree = "<group>";
+		};
 		5D915F731EA8B740009D7069 = {
 			isa = PBXGroup;
 			children = (
@@ -101,7 +124,7 @@
 		5D915F7E1EA8B740009D7069 /* ListViewComponentDemo */ = {
 			isa = PBXGroup;
 			children = (
-				82EFDD881EA8B7DD003BB610 /* ListViewComponent */,
+				5D3530281EA8F08B005DB20F /* ListView */,
 				5D915F821EA8B740009D7069 /* AppDelegate.h */,
 				5D915F831EA8B740009D7069 /* AppDelegate.m */,
 				5D915F851EA8B740009D7069 /* ViewController.h */,
@@ -141,11 +164,12 @@
 			path = ListViewComponentDemoUITests;
 			sourceTree = "<group>";
 		};
-		82EFDD881EA8B7DD003BB610 /* ListViewComponent */ = {
+		5DAE5ABF1EA99D9E005AB2C0 /* Cell */ = {
 			isa = PBXGroup;
 			children = (
+				5DAE5AC01EA99DD0005AB2C0 /* LJMListCellConvention.h */,
 			);
-			path = ListViewComponent;
+			path = Cell;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -210,6 +234,7 @@
 		5D915F741EA8B740009D7069 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				CLASSPREFIX = LJM;
 				LastUpgradeCheck = 0830;
 				ORGANIZATIONNAME = com.lianjia;
 				TargetAttributes = {
@@ -286,6 +311,8 @@
 			files = (
 				5D915F871EA8B740009D7069 /* ViewController.m in Sources */,
 				5D915F841EA8B740009D7069 /* AppDelegate.m in Sources */,
+				5D35302B1EA8F0B1005DB20F /* LJMListAdapter.m in Sources */,
+				5D35302F1EA90338005DB20F /* LJMListSectionConfiguration.m in Sources */,
 				5D915F811EA8B740009D7069 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
