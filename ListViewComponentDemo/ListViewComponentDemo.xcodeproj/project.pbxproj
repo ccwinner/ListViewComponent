@@ -91,7 +91,6 @@
 			isa = PBXGroup;
 			children = (
 				5DD1E1CC1EADA7CC0011DC70 /* Deprecated */,
-				5DAE5ABF1EA99D9E005AB2C0 /* Cell */,
 				5D3530291EA8F0B1005DB20F /* LJMListAdapter.h */,
 				5D35302A1EA8F0B1005DB20F /* LJMListAdapter.m */,
 				5D35302C1EA8F6F2005DB20F /* LJMListSectionProtocol.h */,
@@ -169,13 +168,15 @@
 			children = (
 				5DAE5AC01EA99DD0005AB2C0 /* LJMListCellConvention.h */,
 			);
-			path = Cell;
+			name = Cell;
+			path = ../Cell;
 			sourceTree = "<group>";
 		};
 		5DD1E1CC1EADA7CC0011DC70 /* Deprecated */ = {
 			isa = PBXGroup;
 			children = (
 				5DAE5AC11EA99E05005AB2C0 /* LJMListResponseDataProcessor.h */,
+				5DAE5ABF1EA99D9E005AB2C0 /* Cell */,
 			);
 			path = Deprecated;
 			sourceTree = "<group>";
