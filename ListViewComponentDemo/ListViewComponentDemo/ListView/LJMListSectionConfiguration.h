@@ -10,10 +10,9 @@
 #import "LJMListSectionProtocol.h"
 
 @interface LJMListSectionConfiguration : NSObject<LJMListSectionProtocol>
-
 @property (nonatomic, assign) NSInteger section;
 @property (nonatomic, weak) UICollectionView *collectionView;
-//@property (nonatomic, weak) LJMListAdapter *adapter;
-
 - (void)setupData:(id)data;
+- (void)registerClasses;
+
 @end

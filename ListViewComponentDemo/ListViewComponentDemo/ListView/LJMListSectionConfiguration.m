@@ -12,7 +12,7 @@
 @interface LJMListSectionConfiguration ()
 
 @property (nonatomic, strong) NSArray *models;
-
+//@property (nonatomic, strong) NSArray<Class> *itemClasses;
 @end
 
 @implementation LJMListSectionConfiguration
@@ -28,13 +28,24 @@
 
 - (__kindof UICollectionViewCell *)cellForItemAtIndex:(NSInteger)index {
     //感觉这里的reuseIdentifier就让子类去实现吧 convention里面的reuseIdentifier都可以不提供
-    UICollectionViewCell<LJMListCellConvention> *cell = [self.collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([UICollectionViewCell class]) forIndexPath:[NSIndexPath indexPathForItem:index inSection:self.section]];
-    [cell configModel:self.models[index]];
-    return cell;
+    //rowData obj id class
+    return nil;
 }
 
 - (CGSize)sizeForItemAtIndex:(NSInteger)index {
     return CGSizeMake(50, 50);
 }
+
+- (void)registerClasses {
+    /**
+     注册cell header，footer
+     各自的Identifier自己维护
+     
+     */
+}
+
+//- (NSString *)reuseIdentifierWidthIndexObjec:(id)object{
+//
+//}
 
 @end
