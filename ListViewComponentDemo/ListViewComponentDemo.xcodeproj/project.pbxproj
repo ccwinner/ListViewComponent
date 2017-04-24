@@ -58,8 +58,8 @@
 		5D915FA01EA8B740009D7069 /* ListViewComponentDemoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ListViewComponentDemoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D915FA41EA8B740009D7069 /* ListViewComponentDemoUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ListViewComponentDemoUITests.m; sourceTree = "<group>"; };
 		5D915FA61EA8B740009D7069 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		5DAE5AC01EA99DD0005AB2C0 /* LJMListCellConvention.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LJMListCellConvention.h; sourceTree = "<group>"; };
-		5DAE5AC11EA99E05005AB2C0 /* LJMListResponseDataProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LJMListResponseDataProcessor.h; path = ../LJMListResponseDataProcessor.h; sourceTree = "<group>"; };
+		5DD1E1D01EADD6350011DC70 /* LJMListCellConvention.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LJMListCellConvention.h; sourceTree = "<group>"; };
+		5DD1E1D11EADD6350011DC70 /* LJMListResponseDataProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LJMListResponseDataProcessor.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -163,22 +163,21 @@
 			path = ListViewComponentDemoUITests;
 			sourceTree = "<group>";
 		};
-		5DAE5ABF1EA99D9E005AB2C0 /* Cell */ = {
-			isa = PBXGroup;
-			children = (
-				5DAE5AC01EA99DD0005AB2C0 /* LJMListCellConvention.h */,
-			);
-			name = Cell;
-			path = ../Cell;
-			sourceTree = "<group>";
-		};
 		5DD1E1CC1EADA7CC0011DC70 /* Deprecated */ = {
 			isa = PBXGroup;
 			children = (
-				5DAE5AC11EA99E05005AB2C0 /* LJMListResponseDataProcessor.h */,
-				5DAE5ABF1EA99D9E005AB2C0 /* Cell */,
+				5DD1E1CF1EADD6350011DC70 /* Cell */,
+				5DD1E1D11EADD6350011DC70 /* LJMListResponseDataProcessor.h */,
 			);
 			path = Deprecated;
+			sourceTree = "<group>";
+		};
+		5DD1E1CF1EADD6350011DC70 /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				5DD1E1D01EADD6350011DC70 /* LJMListCellConvention.h */,
+			);
+			path = Cell;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
