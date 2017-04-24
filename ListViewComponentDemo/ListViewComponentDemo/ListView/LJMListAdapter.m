@@ -38,6 +38,7 @@ UICollectionViewDelegate>
 //    } else {
 //        NSAssert(nil != self.sectionModels, @"Section models cannot be non-array");
 //    }
+
     NSAssert([self.responseObjects isKindOfClass:[NSArray class]], @"response data must be array");
     NSArray *models = self.responseObjects;
     if ([self.dataSource respondsToSelector:@selector(listAdapter:sectionConfigurationsForData:)]) {
