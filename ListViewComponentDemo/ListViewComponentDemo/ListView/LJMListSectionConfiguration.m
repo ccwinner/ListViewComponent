@@ -18,7 +18,7 @@
 @implementation LJMListSectionConfiguration
 
 - (void)setupData:(id)data {
-    //process data
+#warning - process data 这只是例子，实际基类没有个方法和models属性。
     self.models = [NSArray new];
 }
 
@@ -40,7 +40,7 @@
     /**
      注册cell header，footer
      各自的Identifier自己维护
-     
+
      */
 }
 

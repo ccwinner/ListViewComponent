@@ -37,7 +37,6 @@
 - (NSArray *)responseObjects;
 ///拿到对应响应数据对应的模型
 - (LJMListSectionConfiguration *)sectionConfigurationForResponseObject:(id)responseObject;
-
 //- (void)insertSections:(NSArray *)sections;
 //- (void)removeSections:(NSArray *)sections;
 @end
