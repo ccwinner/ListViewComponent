@@ -1,18 +1,18 @@
 //
-//  ListViewComponentDemoUITests.m
-//  ListViewComponentDemoUITests
+//  ListViewUITests.m
+//  ListViewUITests
 //
-//  Created by chenxiao on 2017/4/20.
-//  Copyright © 2017年 com.lianjia. All rights reserved.
+//  Created by zhangxiaolong on 2017/4/27.
+//  Copyright © 2017年 zhangxiaolong. All rights reserved.
 //
 
 #import <XCTest/XCTest.h>
 
-@interface ListViewComponentDemoUITests : XCTestCase
+@interface ListViewUITests : XCTestCase
 
 @end
 
-@implementation ListViewComponentDemoUITests
+@implementation ListViewUITests
 
 - (void)setUp {
     [super setUp];
