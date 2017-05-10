@@ -44,8 +44,8 @@ typedef void (^LJMListViewUpdateCompletion)(BOOL finished);
                              itemId:(NSNumber *)itemId
                      completion:(dispatch_block_t)completion;
 - (void)removeItemsWithViewClasses:(NSArray<Class<ViewDataProtocol>> *)viewClasses
-                              itemId:(NSArray<NSNumber *> *)itemIds
-                        completion:(dispatch_block_t)completion;
+                              itemIds:(NSArray<NSNumber *> *)itemIds
+                     completion:(dispatch_block_t)completion;
 - (void)clearData;
 
 
