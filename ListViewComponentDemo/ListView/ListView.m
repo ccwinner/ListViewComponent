@@ -103,7 +103,10 @@
 
 - (NSNumber *)addItemWithViewClass:(Class<ViewDataProtocol>)viewClass
                               data:(id)data {
-    return nil;
+    if (!viewClass || !data) {
+        return nil;
+    }
+    return [self addItemsWithViewClasses:@[viewClass] data:@[data]].firstObject;
 }
 
 - (NSNumber *)addHeaderWithViewClass:(Class<ViewDataProtocol>)viewClass
@@ -120,7 +123,10 @@
 }
 
 - (void)removeItemWithViewClass:(Class<ViewDataProtocol>)viewClass data:(id)data completion:(dispatch_block_t)completion {
-
+    if (!viewClass || !data) {
+        return;
+    }
+    [self removeItemsWithViewClasses:@[viewClass] data:@[data] completion:completion];
 }
 
 - (void)removeItemsWithViewClasses:(NSArray<Class<ViewDataProtocol>> *)viewClasses data:(NSArray<id> *)data completion:(dispatch_block_t)completion {
