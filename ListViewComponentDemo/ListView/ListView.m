@@ -8,40 +8,75 @@
 
 #import "ListView.h"
 
-@interface ListViewRowConfig : NSObject
+//@interface ListViewRowConfig : NSObject
+//@property (nonatomic,strong) Class viewClass;
+//@property (nonatomic,strong) id rowData;
+//@property (nonatomic, assign) CGSize viewSize;
+////@property (nonatomic,assign) CGFloat viewHeight;
+//@end
+//
+//@implementation ListViewRowConfig
+//
+//@end
+
+
+@interface LJMListViewItemConfig : NSObject
 @property (nonatomic,strong) Class viewClass;
-@property (nonatomic,strong) id rowData;
+@property (nonatomic,strong) id viewData;
 @property (nonatomic, assign) CGSize viewSize;
-//@property (nonatomic,assign) CGFloat viewHeight;
+@property (nonatomic, strong) NSNumber *Id;
 @end
 
-@implementation ListViewRowConfig
-
-
+@implementation LJMListViewItemConfig
 
 @end
 
-@interface ListViewSectionConfig : NSObject
-@property (nonatomic,strong) Class headerViewClass;
-@property (nonatomic,strong) id headerData;
-@property (nonatomic,strong) NSMutableArray<ListViewRowConfig *> *rowConfigs;
-@property (nonatomic,strong) Class footerViewClass;
-@property (nonatomic,strong) id footerData;
+//@interface ListViewSectionConfig : NSObject
+//@property (nonatomic,strong) Class headerViewClass;
+//@property (nonatomic,strong) id headerData;
+//@property (nonatomic,strong) NSMutableArray<ListViewRowConfig *> *rowConfigs;
+//@property (nonatomic,strong) Class footerViewClass;
+//@property (nonatomic,strong) id footerData;
+//@end
+//
+//@implementation ListViewSectionConfig
+//
+//- (NSMutableArray<ListViewRowConfig *> *)rowConfigs{
+//    if (nil == _rowConfigs) {
+//        _rowConfigs = [NSMutableArray array];
+//    }
+//    return _rowConfigs;
+//}
+//
+//@end
+
+@interface LJMListViewSectionConfig : NSObject
+@property (nonatomic, strong) LJMListViewItemConfig *headerConfig;
+@property (nonatomic, strong) LJMListViewItemConfig *footerConfig;
+@property (nonatomic, strong) NSMutableDictionary<NSNumber *, LJMListViewItemConfig *> *itemConfigDict;
+@property (nonatomic, strong) NSMutableArray<LJMListViewItemConfig *> *itemConfigArray;
 @end
 
-@implementation ListViewSectionConfig
+@implementation LJMListViewSectionConfig
 
-- (NSMutableArray<ListViewRowConfig *> *)rowConfigs{
-    if (nil == _rowConfigs) {
-        _rowConfigs = [NSMutableArray array];
+- (NSMutableDictionary<NSNumber *, LJMListViewItemConfig *> *)itemConfigDict {
+    if (nil == _itemConfigDict) {
+        _itemConfigDict = [NSMutableDictionary new]
+        ;
+        _itemConfigArray = [NSMutableArray new];
     }
-    return _rowConfigs;
+    return _itemConfigDict;
 }
 
 @end
 
+@interface LJMListView()<UICollectionViewDelegate,UICollectionViewDataSource> {
+    LJMListViewSectionConfig *_currentSectionConfig;
+    NSMutableArray<LJMListViewSectionConfig *> *_sectionConfigs;
+//    NSMapTable *_viewConfigMap;
+}
 
-@interface LJMListView()<UITableViewDelegate,UITableViewDataSource>
+
 @property (nonatomic,strong) UITableView *tableView;
 
 @property (nonatomic, strong) UICollectionView *collectionView;
@@ -52,13 +87,7 @@
 
 @end
 
-
-@implementation LJMListView {
-    ListViewSectionConfig *_currentSectionConfig;
-    NSMutableArray<ListViewSectionConfig *> *_dataConfigs;
-    NSCache *_cacheViewsForCalculate;
-    NSMapTable *_viewConfigMap;
-}
+@implementation LJMListView
 
 #pragma mark - Register
 
@@ -91,10 +120,15 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        _dataConfigs = [NSMutableArray array];
-        _cacheViewsForCalculate = [[NSCache alloc]init];
-        _viewConfigMap = [[NSMapTable alloc]initWithKeyOptions:NSPointerFunctionsWeakMemory valueOptions:NSPointerFunctionsWeakMemory capacity:0];
-        [self addSubview:self.tableView];
+//        _dataConfigs = [NSMutableArray array];
+//        _cacheViewsForCalculate = [[NSCache alloc]init];
+//        _viewConfigMap = [[NSMapTable alloc]initWithKeyOptions:NSPointerFunctionsWeakMemory valueOptions:NSPointerFunctionsWeakMemory capacity:0];
+//        [self addSubview:self.tableView];
+        _sectionConfigs = [NSMutableArray new];
+        _registeredItemClasses = [NSMutableSet new];
+        _registeredHeaderClasses = [NSMutableSet new];
+        _registeredFooterClasses = [NSMutableSet new];
+        [self addSubview:self.collectionView];
     }
     return self;
 }
@@ -111,15 +145,88 @@
 
 - (NSNumber *)addHeaderWithViewClass:(Class<ViewDataProtocol>)viewClass
                                 data:(id)data {
-    return nil;
+    if (!viewClass || !data) {
+        return nil;
+    }
+
+    if (!_currentSectionConfig) {
+        _currentSectionConfig = [LJMListViewSectionConfig new];
+        [_sectionConfigs addObject:_currentSectionConfig];
+    }
+
+    LJMListViewItemConfig *headerConfig = [LJMListViewItemConfig new];
+    headerConfig.viewClass = viewClass;
+    headerConfig.viewData = data;
+    CGSize viewSize = [viewClass sizeWithData:data];
+    if (CGSizeEqualToSize(viewSize, CGSizeZero)) {
+        viewSize = CGSizeMake(0, [viewClass heightWithData:data]);
+    }
+    headerConfig.viewSize = viewSize;
 }
 
 - (NSNumber *)addFooterWithViewClass:(Class<ViewDataProtocol>)viewClass data:(id)data {
     return nil;
 }
 
-- (NSArray<NSNumber *> *)addItemsWithViewClasses:(NSArray<Class<ViewDataProtocol>> *)viewClasses data:(NSArray<id> *)data {
-    return nil;
+- (NSArray<NSNumber *> *)addItemsWithViewClasses:(NSArray<Class<ViewDataProtocol>> *)viewClasses data:(NSArray<id> *)dataArray {
+    if (!_currentSectionConfig) {
+        _currentSectionConfig = [LJMListViewSectionConfig new];
+        [_sectionConfigs addObject:_currentSectionConfig];
+    }
+
+    NSMutableArray *resArray = [NSMutableArray arrayWithCapacity:viewClasses.count];
+    [dataArray enumerateObjectsUsingBlock:^(id  _Nonnull data, NSUInteger idx, BOOL * _Nonnull stop) {
+        @autoreleasepool {
+            Class<ViewDataProtocol> viewClass = viewClasses[idx];
+            [self registerItemClassIfNeed:viewClass];
+            LJMListViewItemConfig *itemConfig = [LJMListViewItemConfig new];
+            itemConfig.viewData = data;
+            itemConfig.viewClass = viewClass;
+            CGSize viewSize = [viewClass sizeWithData:data];
+            if (CGSizeEqualToSize(viewSize, CGSizeZero)) {
+                viewSize = CGSizeMake(0, [viewClass heightWithData:data]);
+            }
+            NSNumber *maxId = [_currentSectionConfig.itemConfigArray valueForKeyPath:@"max.Id"];
+            NSNumber *tmpId = @(maxId.integerValue + 1);
+            [resArray addObject:tmpId];
+            itemConfig.Id = tmpId;
+            itemConfig.viewSize = viewSize;
+            [_currentSectionConfig.itemConfigArray addObject:itemConfig];
+        }
+    }];
+    return resArray;
+}
+
+#pragma mark - register class
+
+- (void)registerItemClassIfNeed:(Class)viewClass {
+    if (![_registeredItemClasses containsObject:viewClass]) {
+        [_registeredItemClasses addObject:viewClass];
+        [_collectionView registerClass:viewClass
+            forCellWithReuseIdentifier:NSStringFromClass(viewClass)];
+    }
+}
+
+- (void)registerItemClassesIfNeed:(NSArray<Class> *)viewClasses {
+    for (Class viewClass in viewClasses) {
+        if (![_registeredItemClasses containsObject:viewClass]) {
+            [_registeredItemClasses addObject:viewClass];
+            [_collectionView registerClass:viewClass
+                forCellWithReuseIdentifier:NSStringFromClass(viewClass)];
+        }
+    }
+}
+
+#pragma mark -
+
+- (void)addRowsWidthViewClasses:(NSArray<Class<ViewDataProtocol>> *)viewClasses datas:(NSArray<id> *)datas{
+    if (nil == _currentSectionConfig) {
+        _currentSectionConfig = [[ListViewSectionConfig alloc]init];
+        [_dataConfigs addObject:_currentSectionConfig];
+    }
+    [datas enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [self addRowWidthViewClass:viewClasses[idx] data:obj];
+    }];
 }
 
 - (void)removeItemWithViewClass:(Class<ViewDataProtocol>)viewClass data:(id)data completion:(dispatch_block_t)completion {
@@ -165,16 +272,6 @@
     _currentSectionConfig.footerData = data;
     [_dataConfigs addObject:_currentSectionConfig];
     _currentSectionConfig = nil;
-}
-
-- (void)addRowsWidthViewClasses:(NSArray<Class<ViewDataProtocol>> *)viewClasses datas:(NSArray<id> *)datas{
-    if (nil == _currentSectionConfig) {
-        _currentSectionConfig = [[ListViewSectionConfig alloc]init];
-        [_dataConfigs addObject:_currentSectionConfig];
-    }
-    [datas enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        [self addRowWidthViewClass:viewClasses[idx] data:obj];
-    }];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
@@ -299,6 +396,18 @@
         _tableView.delegate = self;
     }
     return _tableView;
+}
+
+- (UICollectionView *)collectionView {
+    if (nil == _collectionView) {
+        //TODO:流式布局需要给出基本重写类
+        _collectionView = [[UICollectionView alloc] initWithFrame:self.bounds
+                                             collectionViewLayout:[UICollectionViewFlowLayout new]];
+        _collectionView.dataSource = self;
+        _collectionView.delegate = self;
+        _collectionView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    }
+    return _collectionView;
 }
 
 - (void)layoutSubviews{

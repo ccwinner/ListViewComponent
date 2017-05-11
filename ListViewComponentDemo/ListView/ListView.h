@@ -9,11 +9,11 @@
 #import <UIKit/UIKit.h>
 
 @protocol ViewDataProtocol <NSObject>
-+ (CGSize)sizeWithData:(id)data;
 @property (nonatomic,strong) id viewData;
 
 @optional
-- (CGFloat)heightWithData:(id)data;
++ (CGSize)sizeWithData:(id)data;
++ (CGFloat)heightWithData:(id)data;
 @end
 
 typedef void (^LJMListViewUpdateCompletion)(BOOL finished);
@@ -28,7 +28,7 @@ typedef void (^LJMListViewUpdateCompletion)(BOOL finished);
 - (NSNumber *)addItemWithViewClass:(Class<ViewDataProtocol>)viewClass
                               data:(id)data;
 - (NSArray<NSNumber *> *)addItemsWithViewClasses:(NSArray<Class<ViewDataProtocol>> *)viewClasses
-                                          data:(NSArray<id> *)data;
+                                          data:(NSArray<id> *)dataArray;
 
 ///删除操作, 结束后相应的id作废。
 - (void)removeItemWithViewClass:(Class<ViewDataProtocol>)viewClass
