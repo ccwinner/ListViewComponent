@@ -7,6 +7,7 @@
 //
 
 #import "ListView.h"
+#import "LJMListViewIdentifier.h"
 
 //@interface ListViewRowConfig : NSObject
 //@property (nonatomic,strong) Class viewClass;
@@ -24,7 +25,7 @@
 @property (nonatomic,strong) Class viewClass;
 @property (nonatomic,strong) id viewData;
 @property (nonatomic, assign) CGSize viewSize;
-@property (nonatomic, strong) NSNumber *Id;
+@property (nonatomic, assign) NSInteger viewId;
 @end
 
 @implementation LJMListViewItemConfig
@@ -53,31 +54,30 @@
 @interface LJMListViewSectionConfig : NSObject
 @property (nonatomic, strong) LJMListViewItemConfig *headerConfig;
 @property (nonatomic, strong) LJMListViewItemConfig *footerConfig;
-@property (nonatomic, strong) NSMutableDictionary<NSNumber *, LJMListViewItemConfig *> *itemConfigDict;
+@property (nonatomic, strong) NSMapTable<NSNumber *, LJMListViewItemConfig *> *itemConfigDict;
+@property (nonatomic, strong) NSMapTable<NSNumber *, LJMListViewItemConfig *> *headerFooterConfigDict;
 @property (nonatomic, strong) NSMutableArray<LJMListViewItemConfig *> *itemConfigArray;
 @end
 
 @implementation LJMListViewSectionConfig
 
-- (NSMutableDictionary<NSNumber *, LJMListViewItemConfig *> *)itemConfigDict {
-    if (nil == _itemConfigDict) {
-        _itemConfigDict = [NSMutableDictionary new]
+- (instancetype)init {
+    if (self = [super init]) {
+        _itemConfigDict = [NSMapTable weakToStrongObjectsMapTable];
         ;
-        _itemConfigArray = [NSMutableArray new];
+        _headerFooterConfigDict = [NSMapTable weakToStrongObjectsMapTable];
     }
-    return _itemConfigDict;
+    return self;
 }
 
 @end
 
-@interface LJMListView()<UICollectionViewDelegate,UICollectionViewDataSource> {
-    LJMListViewSectionConfig *_currentSectionConfig;
-    NSMutableArray<LJMListViewSectionConfig *> *_sectionConfigs;
-//    NSMapTable *_viewConfigMap;
-}
+@interface LJMListView()<UICollectionViewDelegate,UICollectionViewDataSource>
 
-
-@property (nonatomic,strong) UITableView *tableView;
+@property (nonatomic, strong) LJMListViewSectionConfig *currentSectionConfig;
+@property (nonatomic, strong) NSMutableArray<LJMListViewSectionConfig *> *sectionConfigArray;
+@property (nonatomic, strong) NSMutableSet<LJMListViewIdentifier*> *identifierTable;
+@property (nonatomic, strong) NSMapTable<NSNumber *, LJMListViewSectionConfig *> *sectionConfigDict;
 
 @property (nonatomic, strong) UICollectionView *collectionView;
 
@@ -128,6 +128,7 @@
         _registeredItemClasses = [NSMutableSet new];
         _registeredHeaderClasses = [NSMutableSet new];
         _registeredFooterClasses = [NSMutableSet new];
+        _idTable = [NSHashTable hashTableWithOptions:NSPointerFunctionsObjectPersonality | NSPointerFunctionsWeakMemory];
         [self addSubview:self.collectionView];
     }
     return self;
@@ -135,7 +136,7 @@
 
 #pragma mark - Data Source Update
 
-- (NSNumber *)addItemWithViewClass:(Class<ViewDataProtocol>)viewClass
+- (NSNumber *)addItemWithViewClass:(Class<LJMListViewDataProtocol>)viewClass
                               data:(id)data {
     if (!viewClass || !data) {
         return nil;
@@ -143,7 +144,7 @@
     return [self addItemsWithViewClasses:@[viewClass] data:@[data]].firstObject;
 }
 
-- (NSNumber *)addHeaderWithViewClass:(Class<ViewDataProtocol>)viewClass
+- (NSNumber *)addHeaderWithViewClass:(Class<LJMListViewDataProtocol>)viewClass
                                 data:(id)data {
     if (!viewClass || !data) {
         return nil;
@@ -162,13 +163,16 @@
         viewSize = CGSizeMake(0, [viewClass heightWithData:data]);
     }
     headerConfig.viewSize = viewSize;
+    NSNumber *minId = [_currentSectionConfig.itemConfigArray valueForKeyPath:@"min.Id"];
+    headerConfig.Id = @(minId.integerValue - 1);
+    return headerConfig.Id;
 }
 
-- (NSNumber *)addFooterWithViewClass:(Class<ViewDataProtocol>)viewClass data:(id)data {
+- (NSNumber *)addFooterWithViewClass:(Class<LJMListViewDataProtocol>)viewClass data:(id)data {
     return nil;
 }
 
-- (NSArray<NSNumber *> *)addItemsWithViewClasses:(NSArray<Class<ViewDataProtocol>> *)viewClasses data:(NSArray<id> *)dataArray {
+- (NSArray<NSNumber *> *)addItemsWithViewClasses:(NSArray<Class<LJMListViewDataProtocol>> *)viewClasses data:(NSArray<id> *)dataArray {
     if (!_currentSectionConfig) {
         _currentSectionConfig = [LJMListViewSectionConfig new];
         [_sectionConfigs addObject:_currentSectionConfig];
@@ -177,7 +181,7 @@
     NSMutableArray *resArray = [NSMutableArray arrayWithCapacity:viewClasses.count];
     [dataArray enumerateObjectsUsingBlock:^(id  _Nonnull data, NSUInteger idx, BOOL * _Nonnull stop) {
         @autoreleasepool {
-            Class<ViewDataProtocol> viewClass = viewClasses[idx];
+            Class<LJMListViewDataProtocol> viewClass = viewClasses[idx];
             [self registerItemClassIfNeed:viewClass];
             LJMListViewItemConfig *itemConfig = [LJMListViewItemConfig new];
             itemConfig.viewData = data;
@@ -219,7 +223,10 @@
 
 #pragma mark -
 
-- (void)addRowsWidthViewClasses:(NSArray<Class<ViewDataProtocol>> *)viewClasses datas:(NSArray<id> *)datas{
+
+
+
+- (void)addRowsWidthViewClasses:(NSArray<Class<LJMListViewDataProtocol>> *)viewClasses datas:(NSArray<id> *)datas{
     if (nil == _currentSectionConfig) {
         _currentSectionConfig = [[ListViewSectionConfig alloc]init];
         [_dataConfigs addObject:_currentSectionConfig];
@@ -229,14 +236,14 @@
     }];
 }
 
-- (void)removeItemWithViewClass:(Class<ViewDataProtocol>)viewClass data:(id)data completion:(dispatch_block_t)completion {
+- (void)removeItemWithViewClass:(Class<LJMListViewDataProtocol>)viewClass data:(id)data completion:(dispatch_block_t)completion {
     if (!viewClass || !data) {
         return;
     }
     [self removeItemsWithViewClasses:@[viewClass] data:@[data] completion:completion];
 }
 
-- (void)removeItemsWithViewClasses:(NSArray<Class<ViewDataProtocol>> *)viewClasses data:(NSArray<id> *)data completion:(dispatch_block_t)completion {
+- (void)removeItemsWithViewClasses:(NSArray<Class<LJMListViewDataProtocol>> *)viewClasses data:(NSArray<id> *)data completion:(dispatch_block_t)completion {
 
 }
 
@@ -244,7 +251,7 @@
     [self.tableView reloadData];
 }
 
-- (void)addHeaderWidthViewClass:(Class<ViewDataProtocol>)viewClass data:(id)data{
+- (void)addHeaderWidthViewClass:(Class<LJMListViewDataProtocol>)viewClass data:(id)data{
     ListViewSectionConfig *sectionConfig = [[ListViewSectionConfig alloc]init];
     sectionConfig.headerViewClass = viewClass;
     sectionConfig.headerData = data;
@@ -252,7 +259,7 @@
     _currentSectionConfig = sectionConfig;
 }
 
-- (void)addRowWidthViewClass:(Class<ViewDataProtocol>)viewClass data:(id)data{
+- (void)addRowWidthViewClass:(Class<LJMListViewDataProtocol>)viewClass data:(id)data{
     if (nil == _currentSectionConfig) {
         _currentSectionConfig = [[ListViewSectionConfig alloc]init];
         [_dataConfigs addObject:_currentSectionConfig];
@@ -263,7 +270,7 @@
     [_currentSectionConfig.rowConfigs addObject:rowConfig];
 }
 
-- (void)addFooterWidthViewClass:(Class<ViewDataProtocol>)viewClass data:(id)data{
+- (void)addFooterWidthViewClass:(Class<LJMListViewDataProtocol>)viewClass data:(id)data{
     if (nil == _currentSectionConfig) {
         _currentSectionConfig = [[ListViewSectionConfig alloc]init];
         [_dataConfigs addObject:_currentSectionConfig];
@@ -286,7 +293,7 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
     ListViewSectionConfig *sectionConfig = _dataConfigs[section];
 //    NSString *key = NSStringFromClass(sectionConfig.headerViewClass);
-//    UIView<ViewDataProtocol> *cacheView = [_cacheViewsForCalculate objectForKey:key];
+//    UIView<LJMListViewDataProtocol> *cacheView = [_cacheViewsForCalculate objectForKey:key];
 //    if (nil == cacheView) {
 //        cacheView = [[sectionConfig.headerViewClass alloc]init];
 //        [_cacheViewsForCalculate setObject:cacheView forKey:key];
@@ -303,7 +310,7 @@
 
 - (CGFloat)heigthForViewClass:(Class)viewClass data:(id)data width:(CGFloat)width{
     NSString *key = NSStringFromClass(viewClass);
-    UIView<ViewDataProtocol> *cacheView = [_cacheViewsForCalculate objectForKey:key];
+    UIView<LJMListViewDataProtocol> *cacheView = [_cacheViewsForCalculate objectForKey:key];
     if (nil == cacheView) {
         cacheView = [[viewClass alloc]init];
         [_cacheViewsForCalculate setObject:cacheView forKey:key];
@@ -338,7 +345,7 @@
         headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:identifier];
     }
 
-    UIView<ViewDataProtocol> *contentView = [_viewConfigMap objectForKey:sectionConfig.headerData];
+    UIView<LJMListViewDataProtocol> *contentView = [_viewConfigMap objectForKey:sectionConfig.headerData];
     if (nil == contentView) {
         contentView = [[sectionConfig.headerViewClass alloc]init];
         [headerView.contentView addSubview:contentView];
@@ -357,7 +364,7 @@
         [tableView registerClass:[UITableViewHeaderFooterView class]  forHeaderFooterViewReuseIdentifier:identifier];
         footerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:identifier];
     }
-    UIView<ViewDataProtocol> *contentView = [_viewConfigMap objectForKey:sectionConfig.headerData];
+    UIView<LJMListViewDataProtocol> *contentView = [_viewConfigMap objectForKey:sectionConfig.headerData];
     if (nil == contentView) {
         contentView = [[sectionConfig.footerViewClass alloc]init];
         [footerView.contentView addSubview:contentView];
@@ -377,7 +384,7 @@
         [tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:identifier];
         cell = [tableView dequeueReusableCellWithIdentifier:identifier];
     }
-    UIView<ViewDataProtocol> *contentView = [_viewConfigMap objectForKey:rowConfig.rowData];
+    UIView<LJMListViewDataProtocol> *contentView = [_viewConfigMap objectForKey:rowConfig.rowData];
     if (nil == contentView) {
         contentView = [[rowConfig.viewClass alloc]init];
         [cell.contentView addSubview:contentView];
